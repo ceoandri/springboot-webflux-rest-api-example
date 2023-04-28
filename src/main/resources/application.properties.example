@@ -1,6 +1,16 @@
 spring.r2dbc.url=r2dbc:postgresql://{host}:{port}/{db}
 spring.r2dbc.username=
 spring.r2dbc.password=
+
 spring.flyway.url=jdbc:postgresql://{host}:{port}/{db}
 spring.flyway.user=
 spring.flyway.password=
+
+springdoc.version=
+springdoc.swagger-ui.enabled=
+springdoc.swagger-ui.path=
+springdoc.api-docs.enabled=
+springdoc.api-docs.groups.enabled=
+springdoc.api-docs.path=
+springdoc.webjars.prefix=
+
