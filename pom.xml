@@ -82,6 +82,15 @@
 			<artifactId>reactor-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+	        <groupId>io.springfox</groupId>
+	        <artifactId>springfox-boot-starter</artifactId>
+	        <version>3.0.0</version>
+	    </dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -99,6 +108,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>contoh.gratis.api</finalName>
 	</build>
 
 </project>
