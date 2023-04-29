@@ -11,7 +11,7 @@ import com.google.gson.GsonBuilder;
 public class PaginationUtil {
 	
 	public static boolean isLastPage(int size, int offset, long totalData){
-        return (totalData - size) < offset;
+        return (totalData - size) <= offset;
     }
 
     public static boolean isFirstPage(int offset){

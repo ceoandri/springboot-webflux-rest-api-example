@@ -107,12 +107,16 @@ public class MstLanguageMappingServiceImpl implements MstLanguageMappingService 
 						.collectList())
 				.zipWith(this.customMstLanguageMappingRepository.countAll(criterias))
 				.map(tuple -> {
+					int size = tuple.getT1().getT2().size();
+					int offset = tuple.getT1().getT1().getT2();
+					long totalData = tuple.getT2();
+					
 					return PaginationResponse.<MstLanguageMappingResponse>builder()
 							.contents(tuple.getT1().getT2())
-							.firstPage(PaginationUtil.isFirstPage(tuple.getT1().getT1().getT2()))
-                            .lastPage(PaginationUtil.isLastPage(tuple.getT1().size(), tuple.getT1().getT1().getT2(), tuple.getT2()))
-                            .totalPages(PaginationUtil.getTotalPages(tuple.getT1().getT2().size(), tuple.getT2()))
-							.totalData(tuple.getT2())
+							.firstPage(PaginationUtil.isFirstPage(offset))
+                            .lastPage(PaginationUtil.isLastPage(size, offset, totalData))
+                            .totalPages(PaginationUtil.getTotalPages(size, totalData))
+							.totalData(totalData)
 							.build();
 				});
 	}
