@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import gratis.contoh.api.model.dto.MstLanguageMappingDto;
+import gratis.contoh.api.model.request.MstLanguageMappingFilterRequest;
 import gratis.contoh.api.model.response.BaseResponse;
 import gratis.contoh.api.model.response.MstLanguageMappingResponse;
+import gratis.contoh.api.model.response.PaginationResponse;
 import gratis.contoh.api.service.MstLanguageMappingService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -38,6 +41,22 @@ public class MstLanguageMappingController {
         		.map(item -> {
         			return ResponseEntity.ok(
         					BaseResponse.<List<MstLanguageMappingResponse>>builder()
+        					.status(HttpStatus.OK.value())
+                            .message("success")
+                            .data(item)
+                            .build());
+        		});
+    }
+	
+	@GetMapping("/page")
+	@Tag(name = "Get with Pagination", description = "Retrive data language mapping with pagination configuration")
+    public Mono<ResponseEntity<BaseResponse<PaginationResponse<MstLanguageMappingResponse>>>> getPaged(
+    		@RequestParam @Valid Mono<MstLanguageMappingFilterRequest> request, 
+    		ServerHttpRequest serverHttpRequest) {
+        return mstLanguageMappingService.getPaged(request)
+        		.map(item -> {
+        			return ResponseEntity.ok(
+        					BaseResponse.<PaginationResponse<MstLanguageMappingResponse>>builder()
         					.status(HttpStatus.OK.value())
                             .message("success")
                             .data(item)

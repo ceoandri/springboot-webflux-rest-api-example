@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 
 import gratis.contoh.api.model.MstLanguageMapping;
 import gratis.contoh.api.model.dto.MstLanguageMappingDto;
+import gratis.contoh.api.model.request.MstLanguageMappingFilterRequest;
 import gratis.contoh.api.model.response.MstLanguageMappingResponse;
+import gratis.contoh.api.model.response.PaginationResponse;
 import gratis.contoh.api.repository.MstLanguageMappingRepository;
 import gratis.contoh.api.service.MstLanguageMappingService;
 import gratis.contoh.api.util.ObjectUtil;
@@ -70,6 +72,13 @@ public class MstLanguageMappingServiceImpl implements MstLanguageMappingService 
 				})
 				.flatMap(entity -> this.mstLanguageMappingRepository.save(entity))
 				.map(entity -> responseMapper.convert(MstLanguageMappingResponse.class, entity));
+	}
+
+	@Override
+	public Mono<PaginationResponse<MstLanguageMappingResponse>> getPaged(
+			Mono<MstLanguageMappingFilterRequest> request) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

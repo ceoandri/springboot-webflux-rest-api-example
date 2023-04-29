@@ -13,11 +13,11 @@ public class SwaggerConfiguration {
 	@Bean
 	public GroupedOpenApi mstLanguangeMappingOpenApi(
 			@Value("${springdoc.version}") String appVersion) {
-		String[] paths = { "/api/v1/**" };
+		String[] paths = { "/api/v1/mst-language-mapping/**" };
 		return GroupedOpenApi.builder().
-				group("v1")
+				group("mst-language-mapping v1")
 				.addOpenApiCustomizer(openApi -> openApi.info(new Info()
-						.title("Springboot Webflux").version(appVersion)))
+						.title("Master Language Mapping API Documentation").version(appVersion)))
 				.pathsToMatch(paths)
 				.build();
 	}
