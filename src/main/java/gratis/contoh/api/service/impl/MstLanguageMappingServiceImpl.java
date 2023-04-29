@@ -2,7 +2,6 @@ package gratis.contoh.api.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -91,24 +90,26 @@ public class MstLanguageMappingServiceImpl implements MstLanguageMappingService 
 		ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping> responseMapper = 
 				new ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping>();
 		
-		ArrayList<Criteria> criterias = new ArrayList<Criteria>();
-		criterias.add(new Criteria(
-				Operator.AND, Condition.IS_NULL, "deleted_at", new String[]{""}, ValueType.TIMESTAMP));
-		
 		return request
-				.map(req -> PaginationUtil.getPaginationRequest(req, "mapping desc"))
-				.zipWhen(paginationRequest -> {
+				.zipWhen(req -> Mono.just(PaginationUtil.getPaginationRequest(req, "mapping desc")))
+				.zipWhen(tuple -> {
 					return Mono.just(
-							(paginationRequest.getSize() * paginationRequest.getPage()) - paginationRequest.getSize());
+							(tuple.getT2().getSize() * tuple.getT2().getPage()) - tuple.getT2().getSize());
+				})
+				.zipWhen(tuple -> {
+					ArrayList<Criteria> criterias = new ArrayList<Criteria>();
+					criterias.add(new Criteria(
+							Operator.AND, Condition.IS_NULL, "deleted_at", new String[]{""}, ValueType.TIMESTAMP));
+					return Mono.just(criterias);
 				})
 				.zipWhen(tuple -> this.customMstLanguageMappingRepository
-						.findAll(criterias, tuple.getT1())
+						.findAll(tuple.getT2(), tuple.getT1().getT1().getT2())
 						.map(item -> responseMapper.convert(MstLanguageMappingResponse.class, item))
 						.collectList())
-				.zipWith(this.customMstLanguageMappingRepository.countAll(criterias))
+				.zipWhen(tuple -> this.customMstLanguageMappingRepository.countAll(tuple.getT1().getT2()))
 				.map(tuple -> {
-					int size = tuple.getT1().getT2().size();
-					int offset = tuple.getT1().getT1().getT2();
+					int size = tuple.getT1().getT1().getT1().getT1().getT2().getSize();
+					int offset = tuple.getT1().getT1().getT1().getT2();
 					long totalData = tuple.getT2();
 					
 					return PaginationResponse.<MstLanguageMappingResponse>builder()
