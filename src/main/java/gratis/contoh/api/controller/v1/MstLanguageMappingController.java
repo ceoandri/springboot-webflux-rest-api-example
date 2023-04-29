@@ -96,7 +96,14 @@ public class MstLanguageMappingController {
                             .message("item deleted")
                             .data(item)
                             .build());
-        		});
+        		})
+        		.defaultIfEmpty(ResponseEntity
+        				.status(HttpStatus.NOT_FOUND.value())
+        				.body(BaseResponse.<MstLanguageMappingResponse>builder()
+                            .status(HttpStatus.NOT_FOUND.value())
+                            .message("delete failed. " + id + " not found")
+                            .data(null)
+                            .build()));
     }
 
 }

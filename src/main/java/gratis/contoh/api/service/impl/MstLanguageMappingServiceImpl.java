@@ -35,6 +35,7 @@ public class MstLanguageMappingServiceImpl implements MstLanguageMappingService 
 				new ObjectUtil<MstLanguageMappingResponse, MstLanguageMapping>();
 		
 		return this.mstLanguageMappingRepository.findById(id)
+				.filter(entity -> entity.getDeletedAt() == null)
 				.map(item -> mapper.convert(MstLanguageMappingResponse.class, item));
 	}
 
@@ -62,6 +63,7 @@ public class MstLanguageMappingServiceImpl implements MstLanguageMappingService 
 				new ObjectUtil<MstLanguageMappingResponse, MstLanguageMapping>();
 		
 		return this.mstLanguageMappingRepository.findById(id)
+				.filter(entity -> entity.getDeletedAt() == null)
 				.map(entity -> {
 					entity.setDeletedAt(LocalDateTime.now());
 					return entity;
