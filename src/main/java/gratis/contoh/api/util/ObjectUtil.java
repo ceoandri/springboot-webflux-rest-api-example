@@ -1,6 +1,7 @@
 package gratis.contoh.api.util;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import com.google.gson.GsonBuilder;
 public class ObjectUtil<T, Z> {
 	private Gson gson = new GsonBuilder()
 			.registerTypeAdapter(Date.class, new GsonDateUtil())
+			.registerTypeAdapter(LocalDateTime.class, new GsonLocalDateTimeUtil())
 		    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
 		    .create();
 	

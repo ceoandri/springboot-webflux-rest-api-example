@@ -1,11 +1,13 @@
 package gratis.contoh.api.model;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,5 +35,9 @@ public class MstLanguageMapping implements Serializable {
 	@Column("en")
 	@NonNull
 	private String en;
+	
+	@Column("deleted_at")
+	@Nullable
+	private LocalDateTime deletedAt;
 
 }
