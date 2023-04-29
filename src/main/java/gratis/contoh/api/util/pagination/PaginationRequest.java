@@ -1,4 +1,4 @@
-package gratis.contoh.api.model.request;
+package gratis.contoh.api.util.pagination;
 
 import java.io.Serializable;
 

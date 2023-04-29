@@ -1,4 +1,4 @@
-package gratis.contoh.api.util;
+package gratis.contoh.api.util.mapper;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
@@ -9,7 +9,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class ObjectUtil<T, Z> {
+public class ObjectMapperUtil<T, Z> {
 	private Gson gson = new GsonBuilder()
 			.registerTypeAdapter(Date.class, new GsonDateUtil())
 			.registerTypeAdapter(LocalDateTime.class, new GsonLocalDateTimeUtil())

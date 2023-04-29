@@ -1,4 +1,4 @@
-package gratis.contoh.api.model.response;
+package gratis.contoh.api.util.pagination;
 
 import java.io.Serializable;
 import java.util.List;

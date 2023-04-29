@@ -1,5 +1,6 @@
 package gratis.contoh.api.model.request;
 
+import gratis.contoh.api.util.pagination.PaginationRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

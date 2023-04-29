@@ -19,8 +19,8 @@ import gratis.contoh.api.model.dto.MstLanguageMappingDto;
 import gratis.contoh.api.model.request.MstLanguageMappingFilterRequest;
 import gratis.contoh.api.model.response.BaseResponse;
 import gratis.contoh.api.model.response.MstLanguageMappingResponse;
-import gratis.contoh.api.model.response.PaginationResponse;
 import gratis.contoh.api.service.MstLanguageMappingService;
+import gratis.contoh.api.util.pagination.PaginationResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import reactor.core.publisher.Mono;
@@ -51,7 +51,7 @@ public class MstLanguageMappingController {
 	@GetMapping("/page")
 	@Tag(name = "Get with Pagination", description = "Retrive data language mapping with pagination configuration")
     public Mono<ResponseEntity<BaseResponse<PaginationResponse<MstLanguageMappingResponse>>>> getPaged(
-    		@RequestParam @Valid Mono<MstLanguageMappingFilterRequest> request, 
+    		@Valid Mono<MstLanguageMappingFilterRequest> request, 
     		ServerHttpRequest serverHttpRequest) {
         return mstLanguageMappingService.getPaged(request)
         		.map(item -> {

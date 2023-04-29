@@ -3,7 +3,7 @@ package gratis.contoh.api.service;
 import gratis.contoh.api.model.dto.MstLanguageMappingDto;
 import gratis.contoh.api.model.request.MstLanguageMappingFilterRequest;
 import gratis.contoh.api.model.response.MstLanguageMappingResponse;
-import gratis.contoh.api.model.response.PaginationResponse;
+import gratis.contoh.api.util.pagination.PaginationResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
