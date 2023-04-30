@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import gratis.contoh.api.model.redis.MstLanguageMapping;
 import gratis.contoh.api.repository.MstLanguageMappingRepository;
 import gratis.contoh.api.repository.RedisMstLanguageMappingRepository;
-import gratis.contoh.api.util.mapper.ObjectMapperUtil;
+import gratis.contoh.api.util.mapper.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 
 @Component
@@ -24,8 +24,8 @@ public class MstLanguageMappingLoader {
 	
 	@PostConstruct
 	public void loadData() {
-		ObjectMapperUtil<MstLanguageMapping, gratis.contoh.api.model.MstLanguageMapping> mapper = 
-				new ObjectMapperUtil<MstLanguageMapping, gratis.contoh.api.model.MstLanguageMapping>();
+		ObjectMapper<MstLanguageMapping, gratis.contoh.api.model.MstLanguageMapping> mapper = 
+				new ObjectMapper<MstLanguageMapping, gratis.contoh.api.model.MstLanguageMapping>();
 		
 		this.reactiveRepository.findAllByDeletedAtIsNull()
 				.map(item -> mapper.convert(MstLanguageMapping.class, item))

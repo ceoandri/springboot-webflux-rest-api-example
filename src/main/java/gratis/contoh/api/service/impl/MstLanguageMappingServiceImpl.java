@@ -15,10 +15,10 @@ import gratis.contoh.api.model.response.MstLanguageMappingResponse;
 import gratis.contoh.api.repository.CustomMstLanguageMappingRepository;
 import gratis.contoh.api.repository.MstLanguageMappingRepository;
 import gratis.contoh.api.service.MstLanguageMappingService;
-import gratis.contoh.api.util.mapper.ObjectMapperUtil;
+import gratis.contoh.api.util.mapper.ObjectMapper;
 import gratis.contoh.api.util.pagination.PaginationRequest;
 import gratis.contoh.api.util.pagination.PaginationResponse;
-import gratis.contoh.api.util.pagination.PaginationUtil;
+import gratis.contoh.api.util.pagination.Pagination;
 import gratis.contoh.api.util.querybuilder.Condition;
 import gratis.contoh.api.util.querybuilder.Criteria;
 import gratis.contoh.api.util.querybuilder.Operator;
@@ -39,8 +39,8 @@ public class MstLanguageMappingServiceImpl implements MstLanguageMappingService 
 	@Transactional
 	@Cacheable
 	public Flux<MstLanguageMappingResponse> getAll() {
-		ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping> mapper = 
-				new ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping>();
+		ObjectMapper<MstLanguageMappingResponse, MstLanguageMapping> mapper = 
+				new ObjectMapper<MstLanguageMappingResponse, MstLanguageMapping>();
 		
 		return this.mstLanguageMappingRepository.findAllByDeletedAtIsNull()
 				.map(item -> mapper.convert(MstLanguageMappingResponse.class, item)).cache();
@@ -49,8 +49,8 @@ public class MstLanguageMappingServiceImpl implements MstLanguageMappingService 
 	@Override
 	@Transactional
 	public Mono<MstLanguageMappingResponse> getById(String id) {
-		ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping> mapper = 
-				new ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping>();
+		ObjectMapper<MstLanguageMappingResponse, MstLanguageMapping> mapper = 
+				new ObjectMapper<MstLanguageMappingResponse, MstLanguageMapping>();
 		
 		return this.mstLanguageMappingRepository.findById(id)
 				.filter(entity -> entity.getDeletedAt() == null)
@@ -60,11 +60,11 @@ public class MstLanguageMappingServiceImpl implements MstLanguageMappingService 
 	@Override
 	@Transactional
 	public Mono<MstLanguageMappingResponse> post(Mono<MstLanguageMappingDto> request) {
-		ObjectMapperUtil<MstLanguageMapping, MstLanguageMappingDto> entityMapper = 
-				new ObjectMapperUtil<MstLanguageMapping, MstLanguageMappingDto>();
+		ObjectMapper<MstLanguageMapping, MstLanguageMappingDto> entityMapper = 
+				new ObjectMapper<MstLanguageMapping, MstLanguageMappingDto>();
 		
-		ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping> responseMapper = 
-				new ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping>();
+		ObjectMapper<MstLanguageMappingResponse, MstLanguageMapping> responseMapper = 
+				new ObjectMapper<MstLanguageMappingResponse, MstLanguageMapping>();
 		
 		return request
 				.map(dto -> entityMapper.convert(MstLanguageMapping.class, dto))
@@ -79,8 +79,8 @@ public class MstLanguageMappingServiceImpl implements MstLanguageMappingService 
 	@Override
 	@Transactional
 	public Mono<MstLanguageMappingResponse> delete(String id) {
-		ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping> responseMapper = 
-				new ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping>();
+		ObjectMapper<MstLanguageMappingResponse, MstLanguageMapping> responseMapper = 
+				new ObjectMapper<MstLanguageMappingResponse, MstLanguageMapping>();
 		
 		return this.mstLanguageMappingRepository.findById(id)
 				.filter(entity -> entity.getDeletedAt() == null)
@@ -96,11 +96,11 @@ public class MstLanguageMappingServiceImpl implements MstLanguageMappingService 
 	@Transactional
 	public Mono<PaginationResponse<MstLanguageMappingResponse>> getPaged(
 			Mono<MstLanguageMappingFilterRequest> request) {
-		ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping> responseMapper = 
-				new ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping>();
+		ObjectMapper<MstLanguageMappingResponse, MstLanguageMapping> responseMapper = 
+				new ObjectMapper<MstLanguageMappingResponse, MstLanguageMapping>();
 		
 		return request
-				.zipWhen(req -> Mono.just(PaginationUtil.getPaginationRequest(req, "mapping desc")))
+				.zipWhen(req -> Mono.just(Pagination.getPaginationRequest(req, "mapping desc")))
 				.zipWhen(tuple -> Mono.just(getOffset(tuple.getT2())))
 				.zipWhen(tuple -> Mono.just(generateCriteria(tuple.getT1().getT1())))
 				.zipWhen(tuple -> this.customMstLanguageMappingRepository
@@ -115,9 +115,9 @@ public class MstLanguageMappingServiceImpl implements MstLanguageMappingService 
 					
 					return PaginationResponse.<MstLanguageMappingResponse>builder()
 							.contents(tuple.getT1().getT2())
-							.firstPage(PaginationUtil.isFirstPage(offset))
-                            .lastPage(PaginationUtil.isLastPage(size, offset, totalData))
-                            .totalPages(PaginationUtil.getTotalPages(size, totalData))
+							.firstPage(Pagination.isFirstPage(offset))
+                            .lastPage(Pagination.isLastPage(size, offset, totalData))
+                            .totalPages(Pagination.getTotalPages(size, totalData))
 							.totalData(totalData)
 							.build();
 				});

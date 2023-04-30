@@ -8,7 +8,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class PaginationUtil {
+public class Pagination {
 	
 	public static boolean isLastPage(int size, int offset, long totalData){
         return (totalData - size) <= offset;

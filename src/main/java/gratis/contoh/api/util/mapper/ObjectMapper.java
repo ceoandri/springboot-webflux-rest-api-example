@@ -9,10 +9,10 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class ObjectMapperUtil<T, Z> {
+public class ObjectMapper<T, Z> {
 	private Gson gson = new GsonBuilder()
-			.registerTypeAdapter(Date.class, new GsonDateUtil())
-			.registerTypeAdapter(LocalDateTime.class, new GsonLocalDateTimeUtil())
+			.registerTypeAdapter(Date.class, new GsonDateAdapter())
+			.registerTypeAdapter(LocalDateTime.class, new GsonLocalDateTimeAdapter())
 		    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
 		    .create();
 	

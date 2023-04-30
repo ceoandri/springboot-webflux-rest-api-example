@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import gratis.contoh.api.util.pagination.PaginationRequest;
 
-public class QueryBuilderUtil {
+public class QueryBuilder {
 	
 	public static String builder(String baseQuery, 
 			ArrayList<Criteria> criterias) {
