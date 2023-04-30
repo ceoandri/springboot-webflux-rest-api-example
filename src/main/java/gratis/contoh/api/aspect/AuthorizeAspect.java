@@ -20,7 +20,7 @@ public class AuthorizeAspect {
 	
 	private static final Logger logger = LoggerFactory.getLogger(AuthorizeAspect.class);
 	
-	@Pointcut("@annotation(gratis.contoh.api.util.annotation.Authorize) && args(request,..)")
+	@Pointcut("args(request,..)")
 	private void serverHttpRequest(ServerHttpRequest request) {}
 	
 	@Pointcut("@annotation(authorize)")
