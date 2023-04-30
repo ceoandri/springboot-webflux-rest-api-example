@@ -9,11 +9,15 @@ import java.lang.annotation.Target;
 
 import org.springframework.http.HttpHeaders;
 
+import gratis.contoh.api.constant.AuthTypes;
+
 @Retention(RUNTIME)
 @Target({ TYPE, METHOD })
 public @interface Authorize {
 
 	String header() default HttpHeaders.AUTHORIZATION;
+	
+	String authType() default AuthTypes.BEARER;
 
 	String[] roles() default {};
 	
