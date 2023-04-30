@@ -1,5 +1,6 @@
 package gratis.contoh.api.controller.exception;
 
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +29,21 @@ public class RestExceptionHandler {
 				.build();
 	    return Mono.just(ResponseEntity
 	    		.status(HttpStatus.BAD_REQUEST)
+	    		.body(errorResponse));
+	}
+	
+	@ExceptionHandler(AccessDeniedException.class)
+	public Mono<ResponseEntity<Object>> handleAccessDeniedException(AccessDeniedException ex) {
+		List<String> errors = new ArrayList<String>();
+		errors.add(ex.getMessage());
+	    
+		BaseResponse<String> errorResponse = BaseResponse.<String>builder()
+				.errors(errors)
+				.message(HttpStatus.FORBIDDEN.name())
+				.status(HttpStatus.FORBIDDEN.value())
+				.build();
+	    return Mono.just(ResponseEntity
+	    		.status(HttpStatus.FORBIDDEN)
 	    		.body(errorResponse));
 	}
 }

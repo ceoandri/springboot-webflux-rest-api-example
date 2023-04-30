@@ -15,11 +15,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import gratis.contoh.api.constant.AccessTypes;
+import gratis.contoh.api.constant.Modules;
+import gratis.contoh.api.constant.Roles;
 import gratis.contoh.api.model.dto.MstLanguageMappingDto;
 import gratis.contoh.api.model.request.MstLanguageMappingFilterRequest;
 import gratis.contoh.api.model.response.BaseResponse;
 import gratis.contoh.api.model.response.MstLanguageMappingResponse;
 import gratis.contoh.api.service.MstLanguageMappingService;
+import gratis.contoh.api.util.annotation.Authorize;
 import gratis.contoh.api.util.pagination.PaginationResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -34,6 +38,10 @@ public class MstLanguageMappingController {
 	
 	@GetMapping("")
 	@Tag(name = "Get All", description = "Retrive all data language mapping")
+	@Authorize(
+			roles = {Roles.SUPER_ADMIN, Roles.ADMIN, Roles.GUEST}, 
+			modules = {Modules.MST_LANGUAGE_MAPPING}, 
+			accessTypes = {AccessTypes.RETRIEVE})
 	public Mono<ResponseEntity<BaseResponse<List<MstLanguageMappingResponse>>>> getAll(
     		ServerHttpRequest serverHttpRequest) {
         return mstLanguageMappingService.getAll()
@@ -48,9 +56,13 @@ public class MstLanguageMappingController {
 	
 	@GetMapping("/page")
 	@Tag(name = "Get with Pagination", description = "Retrive data language mapping with pagination configuration")
+	@Authorize(
+			roles = {Roles.SUPER_ADMIN, Roles.ADMIN, Roles.GUEST}, 
+			modules = {Modules.MST_LANGUAGE_MAPPING}, 
+			accessTypes = {AccessTypes.RETRIEVE})
 	public Mono<ResponseEntity<BaseResponse<PaginationResponse<MstLanguageMappingResponse>>>> getPaged(
-    		@Valid Mono<MstLanguageMappingFilterRequest> request, 
-    		ServerHttpRequest serverHttpRequest) {
+			ServerHttpRequest serverHttpRequest, 
+			@Valid Mono<MstLanguageMappingFilterRequest> request) {
         return mstLanguageMappingService.getPaged(request)
         		.map(item -> ResponseEntity
         				.ok(BaseResponse.<PaginationResponse<MstLanguageMappingResponse>>builder()
@@ -62,9 +74,13 @@ public class MstLanguageMappingController {
 	
 	@GetMapping("/{id}")
 	@Tag(name = "Get By ID", description = "Retrive data language mapping by specific id")
+	@Authorize(
+			roles = {Roles.SUPER_ADMIN, Roles.ADMIN, Roles.GUEST}, 
+			modules = {Modules.MST_LANGUAGE_MAPPING}, 
+			accessTypes = {AccessTypes.RETRIEVE})
 	public Mono<ResponseEntity<BaseResponse<MstLanguageMappingResponse>>> getById(
-    		@PathVariable String id,
-    		ServerHttpRequest serverHttpRequest) {
+    		ServerHttpRequest serverHttpRequest,
+    		@PathVariable String id) {
 		List<String> error = new ArrayList<String>();
 		error.add(id + " is not exist");
 		
@@ -86,9 +102,13 @@ public class MstLanguageMappingController {
 	
 	@PostMapping("")
 	@Tag(name = "Create/Edit", description = "create new or edit existing data language mapping")
+	@Authorize(
+			roles = {Roles.SUPER_ADMIN, Roles.ADMIN}, 
+			modules = {Modules.MST_LANGUAGE_MAPPING}, 
+			accessTypes = {AccessTypes.CREATE, AccessTypes.UPDATE})
 	public Mono<ResponseEntity<BaseResponse<MstLanguageMappingResponse>>> post(
-    		@RequestBody @Valid Mono<MstLanguageMappingDto> request,
-    		ServerHttpRequest serverHttpRequest) {
+    		ServerHttpRequest serverHttpRequest,
+    		@RequestBody @Valid Mono<MstLanguageMappingDto> request) {
         return mstLanguageMappingService.post(request)
         		.map(item -> ResponseEntity
         				.ok(BaseResponse.<MstLanguageMappingResponse>builder()
@@ -100,9 +120,13 @@ public class MstLanguageMappingController {
 	
 	@DeleteMapping("/{id}")
 	@Tag(name = "Delete", description = "soft delete existing data language mapping")
+	@Authorize(
+			roles = {Roles.SUPER_ADMIN, Roles.ADMIN}, 
+			modules = {Modules.MST_LANGUAGE_MAPPING}, 
+			accessTypes = {AccessTypes.DELETE})
 	public Mono<ResponseEntity<BaseResponse<MstLanguageMappingResponse>>> delete(
-    		@PathVariable String id,
-    		ServerHttpRequest serverHttpRequest) {
+    		ServerHttpRequest serverHttpRequest,
+    		@PathVariable String id) {
 		List<String> error = new ArrayList<String>();
 		error.add(id + " is not exist");
 		
