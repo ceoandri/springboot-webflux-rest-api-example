@@ -1,5 +1,10 @@
 logging.level.org.springframework.cache=TRACE
 
+spring.data.redis.host=
+spring.data.redis.port=
+spring.data.redis.password=
+spring.data.redis.connect-timeout=
+
 spring.r2dbc.url=r2dbc:postgresql://{host}:{port}/{db}
 spring.r2dbc.username=
 spring.r2dbc.password=
@@ -15,4 +20,3 @@ springdoc.api-docs.enabled=
 springdoc.api-docs.groups.enabled=
 springdoc.api-docs.path=
 springdoc.webjars.prefix=
-
