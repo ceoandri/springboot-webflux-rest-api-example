@@ -1,5 +1,6 @@
 package gratis.contoh.api.controller.v1;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,9 @@ public class MstLanguageMappingController {
 	public Mono<ResponseEntity<BaseResponse<MstLanguageMappingResponse>>> getById(
     		@PathVariable String id,
     		ServerHttpRequest serverHttpRequest) {
+		List<String> error = new ArrayList<String>();
+		error.add(id + " is not exist");
+		
         return mstLanguageMappingService.getById(id)
         		.map(item -> ResponseEntity
         				.ok(BaseResponse.<MstLanguageMappingResponse>builder()
@@ -75,8 +79,8 @@ public class MstLanguageMappingController {
         				.status(HttpStatus.NOT_FOUND.value())
         				.body(BaseResponse.<MstLanguageMappingResponse>builder()
         						.status(HttpStatus.NOT_FOUND.value())
-        						.message(id + " not found")
-        						.data(null)
+        						.message(HttpStatus.NOT_FOUND.name())
+        						.errors(error)
         						.build()));
 	}
 	
@@ -99,6 +103,9 @@ public class MstLanguageMappingController {
 	public Mono<ResponseEntity<BaseResponse<MstLanguageMappingResponse>>> delete(
     		@PathVariable String id,
     		ServerHttpRequest serverHttpRequest) {
+		List<String> error = new ArrayList<String>();
+		error.add(id + " is not exist");
+		
         return mstLanguageMappingService.delete(id)
         		.map(item -> ResponseEntity
         				.ok(BaseResponse.<MstLanguageMappingResponse>builder()
@@ -110,8 +117,8 @@ public class MstLanguageMappingController {
         				.status(HttpStatus.NOT_FOUND.value())
         				.body(BaseResponse.<MstLanguageMappingResponse>builder()
         						.status(HttpStatus.NOT_FOUND.value())
-        						.message("delete failed. " + id + " not found")
-        						.data(null)
+        						.message(HttpStatus.NOT_FOUND.name())
+        						.errors(error)
         						.build()));
 	}
 
