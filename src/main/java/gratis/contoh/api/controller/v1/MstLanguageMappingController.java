@@ -29,99 +29,90 @@ import reactor.core.publisher.Mono;
 public class MstLanguageMappingController {
 	
 	@Autowired
-    private MstLanguageMappingService mstLanguageMappingService;
+	private MstLanguageMappingService mstLanguageMappingService;
 	
 	@GetMapping("")
 	@Tag(name = "Get All", description = "Retrive all data language mapping")
-    public Mono<ResponseEntity<BaseResponse<List<MstLanguageMappingResponse>>>> getAll(
+	public Mono<ResponseEntity<BaseResponse<List<MstLanguageMappingResponse>>>> getAll(
     		ServerHttpRequest serverHttpRequest) {
         return mstLanguageMappingService.getAll()
         		.collectList()
-        		.map(item -> {
-        			return ResponseEntity.ok(
-        					BaseResponse.<List<MstLanguageMappingResponse>>builder()
-        					.status(HttpStatus.OK.value())
-                            .message("success")
-                            .data(item)
-                            .build());
-        		});
-    }
+        		.map(item -> ResponseEntity
+        				.ok(BaseResponse.<List<MstLanguageMappingResponse>>builder()
+        						.status(HttpStatus.OK.value())
+        						.message("success")
+        						.data(item)
+        						.build()));
+	}
 	
 	@GetMapping("/page")
 	@Tag(name = "Get with Pagination", description = "Retrive data language mapping with pagination configuration")
-    public Mono<ResponseEntity<BaseResponse<PaginationResponse<MstLanguageMappingResponse>>>> getPaged(
+	public Mono<ResponseEntity<BaseResponse<PaginationResponse<MstLanguageMappingResponse>>>> getPaged(
     		@Valid Mono<MstLanguageMappingFilterRequest> request, 
     		ServerHttpRequest serverHttpRequest) {
         return mstLanguageMappingService.getPaged(request)
-        		.map(item -> {
-        			return ResponseEntity.ok(
-        					BaseResponse.<PaginationResponse<MstLanguageMappingResponse>>builder()
-        					.status(HttpStatus.OK.value())
-                            .message("success")
-                            .data(item)
-                            .build());
-        		});
-    }
+        		.map(item -> ResponseEntity
+        				.ok(BaseResponse.<PaginationResponse<MstLanguageMappingResponse>>builder()
+        						.status(HttpStatus.OK.value())
+        						.message("success")
+        						.data(item)
+        						.build()));
+	}
 	
 	@GetMapping("/{id}")
 	@Tag(name = "Get By ID", description = "Retrive data language mapping by specific id")
-    public Mono<ResponseEntity<BaseResponse<MstLanguageMappingResponse>>> getById(
+	public Mono<ResponseEntity<BaseResponse<MstLanguageMappingResponse>>> getById(
     		@PathVariable String id,
     		ServerHttpRequest serverHttpRequest) {
         return mstLanguageMappingService.getById(id)
-        		.map(item -> {
-        			return ResponseEntity.ok(
-        					BaseResponse.<MstLanguageMappingResponse>builder()
-                            .status(HttpStatus.OK.value())
-                            .message("success")
-                            .data(item)
-                            .build());})
+        		.map(item -> ResponseEntity
+        				.ok(BaseResponse.<MstLanguageMappingResponse>builder()
+        						.status(HttpStatus.OK.value())
+        						.message("success")
+        						.data(item)
+        						.build()))
         		.defaultIfEmpty(ResponseEntity
         				.status(HttpStatus.NOT_FOUND.value())
         				.body(BaseResponse.<MstLanguageMappingResponse>builder()
-                            .status(HttpStatus.NOT_FOUND.value())
-                            .message(id + " not found")
-                            .data(null)
-                            .build()));
-    }
+        						.status(HttpStatus.NOT_FOUND.value())
+        						.message(id + " not found")
+        						.data(null)
+        						.build()));
+	}
 	
 	@PostMapping("")
 	@Tag(name = "Create/Edit", description = "create new or edit existing data language mapping")
-    public Mono<ResponseEntity<BaseResponse<MstLanguageMappingResponse>>> post(
+	public Mono<ResponseEntity<BaseResponse<MstLanguageMappingResponse>>> post(
     		@RequestBody @Valid Mono<MstLanguageMappingDto> request,
     		ServerHttpRequest serverHttpRequest) {
         return mstLanguageMappingService.post(request)
-        		.map(item -> {
-        			return ResponseEntity.ok(
-        					BaseResponse.<MstLanguageMappingResponse>builder()
-        					.status(HttpStatus.OK.value())
-                            .message("success")
-                            .data(item)
-                            .build());
-        		});
-    }
+        		.map(item -> ResponseEntity
+        				.ok(BaseResponse.<MstLanguageMappingResponse>builder()
+        						.status(HttpStatus.OK.value())
+        						.message("success")
+        						.data(item)
+        						.build()));
+	}
 	
 	@DeleteMapping("/{id}")
 	@Tag(name = "Delete", description = "soft delete existing data language mapping")
-    public Mono<ResponseEntity<BaseResponse<MstLanguageMappingResponse>>> delete(
+	public Mono<ResponseEntity<BaseResponse<MstLanguageMappingResponse>>> delete(
     		@PathVariable String id,
     		ServerHttpRequest serverHttpRequest) {
         return mstLanguageMappingService.delete(id)
-        		.map(item -> {
-        			return ResponseEntity.ok(
-        					BaseResponse.<MstLanguageMappingResponse>builder()
-        					.status(HttpStatus.OK.value())
-                            .message("item deleted")
-                            .data(item)
-                            .build());
-        		})
+        		.map(item -> ResponseEntity
+        				.ok(BaseResponse.<MstLanguageMappingResponse>builder()
+        						.status(HttpStatus.OK.value())
+        						.message("item deleted")
+        						.data(item)
+        						.build()))
         		.defaultIfEmpty(ResponseEntity
         				.status(HttpStatus.NOT_FOUND.value())
         				.body(BaseResponse.<MstLanguageMappingResponse>builder()
-                            .status(HttpStatus.NOT_FOUND.value())
-                            .message("delete failed. " + id + " not found")
-                            .data(null)
-                            .build()));
-    }
+        						.status(HttpStatus.NOT_FOUND.value())
+        						.message("delete failed. " + id + " not found")
+        						.data(null)
+        						.build()));
+	}
 
 }
