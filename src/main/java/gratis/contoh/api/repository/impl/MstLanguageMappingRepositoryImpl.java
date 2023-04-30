@@ -3,6 +3,8 @@ package gratis.contoh.api.repository.impl;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +21,8 @@ import reactor.core.publisher.Mono;
 @Repository
 public class MstLanguageMappingRepositoryImpl implements CustomMstLanguageMappingRepository {
 	
+	private static final Logger logger = LoggerFactory.getLogger(MstLanguageMappingRepositoryImpl.class);
+	
 	private DatabaseClient databaseClient;
 
     public MstLanguageMappingRepositoryImpl(DatabaseClient databaseClient) {
@@ -30,6 +34,8 @@ public class MstLanguageMappingRepositoryImpl implements CustomMstLanguageMappin
 			PaginationRequest paginationRequest) {
 		String base = MstLanguageMappingQuery.getMstLanguageMapping;
 		String query = QueryBuilderUtil.builder(base, criterias, paginationRequest);
+		
+		logger.info("preparing for execute statement " + query);
 
 		ObjectMapperUtil<MstLanguageMapping, Map<String, Object>> mapper = 
 				new ObjectMapperUtil<MstLanguageMapping, Map<String, Object>>();
@@ -44,6 +50,8 @@ public class MstLanguageMappingRepositoryImpl implements CustomMstLanguageMappin
 	public Mono<Long> countAll(ArrayList<Criteria> criterias) {
 		String base = MstLanguageMappingQuery.getMstLanguageMapping;
 		String query = QueryBuilderUtil.countBuilder(base, criterias);
+		
+		logger.info("preparing for execute statement " + query);
 
 		ObjectMapperUtil<Long, Object> mapper = 
 				new ObjectMapperUtil<Long, Object>();

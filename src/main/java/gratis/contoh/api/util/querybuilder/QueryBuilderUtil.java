@@ -91,16 +91,13 @@ public class QueryBuilderUtil {
 					criteria.getValue()[0]));
 		}
 		case LIKE: {
-			return "LIKE ('%" + valueTypeHandler(criteria.getValueType(),
-					criteria.getValue()[0]) + "%')";
+			return "LIKE ('%" + criteria.getValue()[0] + "%')";
 		}
 		case START_WITH: {
-			return "LIKE ('" + valueTypeHandler(criteria.getValueType(),
-					criteria.getValue()[0]) + "%')";
+			return "LIKE ('" + criteria.getValue()[0] + "%')";
 		}
 		case END_WITH: {
-			return "LIKE ('%" + valueTypeHandler(criteria.getValueType(),
-					criteria.getValue()[0]) + "')";
+			return "LIKE ('%" + criteria.getValue()[0] + "')";
 		}
 		case GREATER_THAN: {
 			return String.format("> %s", valueTypeHandler(criteria.getValueType(),

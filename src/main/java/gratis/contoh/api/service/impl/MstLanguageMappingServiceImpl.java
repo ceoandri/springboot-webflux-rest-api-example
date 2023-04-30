@@ -3,8 +3,11 @@ package gratis.contoh.api.service.impl;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import gratis.contoh.api.model.MstLanguageMapping;
 import gratis.contoh.api.model.dto.MstLanguageMappingDto;
@@ -14,6 +17,7 @@ import gratis.contoh.api.repository.CustomMstLanguageMappingRepository;
 import gratis.contoh.api.repository.MstLanguageMappingRepository;
 import gratis.contoh.api.service.MstLanguageMappingService;
 import gratis.contoh.api.util.mapper.ObjectMapperUtil;
+import gratis.contoh.api.util.pagination.PaginationRequest;
 import gratis.contoh.api.util.pagination.PaginationResponse;
 import gratis.contoh.api.util.pagination.PaginationUtil;
 import gratis.contoh.api.util.querybuilder.Condition;
@@ -33,6 +37,7 @@ public class MstLanguageMappingServiceImpl implements MstLanguageMappingService 
 	private CustomMstLanguageMappingRepository customMstLanguageMappingRepository;
 
 	@Override
+	@Transactional
 	public Flux<MstLanguageMappingResponse> getAll() {
 		ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping> mapper = 
 				new ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping>();
@@ -42,6 +47,7 @@ public class MstLanguageMappingServiceImpl implements MstLanguageMappingService 
 	}
 
 	@Override
+	@Transactional
 	public Mono<MstLanguageMappingResponse> getById(String id) {
 		ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping> mapper = 
 				new ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping>();
@@ -52,6 +58,7 @@ public class MstLanguageMappingServiceImpl implements MstLanguageMappingService 
 	}
 
 	@Override
+	@Transactional
 	public Mono<MstLanguageMappingResponse> post(Mono<MstLanguageMappingDto> request) {
 		ObjectMapperUtil<MstLanguageMapping, MstLanguageMappingDto> entityMapper = 
 				new ObjectMapperUtil<MstLanguageMapping, MstLanguageMappingDto>();
@@ -70,6 +77,7 @@ public class MstLanguageMappingServiceImpl implements MstLanguageMappingService 
 	}
 
 	@Override
+	@Transactional
 	public Mono<MstLanguageMappingResponse> delete(String id) {
 		ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping> responseMapper = 
 				new ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping>();
@@ -85,6 +93,7 @@ public class MstLanguageMappingServiceImpl implements MstLanguageMappingService 
 	}
 
 	@Override
+	@Transactional
 	public Mono<PaginationResponse<MstLanguageMappingResponse>> getPaged(
 			Mono<MstLanguageMappingFilterRequest> request) {
 		ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping> responseMapper = 
@@ -92,16 +101,8 @@ public class MstLanguageMappingServiceImpl implements MstLanguageMappingService 
 		
 		return request
 				.zipWhen(req -> Mono.just(PaginationUtil.getPaginationRequest(req, "mapping desc")))
-				.zipWhen(tuple -> {
-					return Mono.just(
-							(tuple.getT2().getSize() * tuple.getT2().getPage()) - tuple.getT2().getSize());
-				})
-				.zipWhen(tuple -> {
-					ArrayList<Criteria> criterias = new ArrayList<Criteria>();
-					criterias.add(new Criteria(
-							Operator.AND, Condition.IS_NULL, "deleted_at", new String[]{""}, ValueType.TIMESTAMP));
-					return Mono.just(criterias);
-				})
+				.zipWhen(tuple -> Mono.just(getOffset(tuple.getT2())))
+				.zipWhen(tuple -> Mono.just(generateCriteria(tuple.getT1().getT1())))
 				.zipWhen(tuple -> this.customMstLanguageMappingRepository
 						.findAll(tuple.getT2(), tuple.getT1().getT1().getT2())
 						.map(item -> responseMapper.convert(MstLanguageMappingResponse.class, item))
@@ -120,6 +121,49 @@ public class MstLanguageMappingServiceImpl implements MstLanguageMappingService 
 							.totalData(totalData)
 							.build();
 				});
+	}
+	
+	private int getOffset(PaginationRequest req) {
+		return (req.getSize() * req.getPage()) - req.getSize();
+	}
+	
+	private ArrayList<Criteria> generateCriteria(MstLanguageMappingFilterRequest req) {
+		ArrayList<Criteria> criterias = new ArrayList<Criteria>();
+		criterias.add(new Criteria(
+				Operator.AND, 
+				Condition.IS_NULL, 
+				"deleted_at", 
+				new String[]{""}, 
+				ValueType.TIMESTAMP));
+		
+		if (req.getMapping() != null && !req.getMapping().isEmpty() && !req.getMapping().isBlank()) {
+			criterias.add(new Criteria(
+					Operator.AND, 
+					Condition.LIKE, 
+					"LOWER(mapping)", 
+					new String[]{req.getMapping().toLowerCase()}, 
+					ValueType.TEXT));
+		}
+		
+		if (req.getId() != null && !req.getId().isEmpty() && !req.getId().isBlank()) {
+			criterias.add(new Criteria(
+					Operator.AND, 
+					Condition.LIKE, 
+					"LOWER(id)", 
+					new String[]{req.getId().toLowerCase()}, 
+					ValueType.TEXT));
+		}
+		
+		if (req.getEn() != null && !req.getEn().isEmpty() && !req.getEn().isBlank()) {
+			criterias.add(new Criteria(
+					Operator.AND, 
+					Condition.LIKE, 
+					"LOWER(en)", 
+					new String[]{req.getEn().toLowerCase()}, 
+					ValueType.TEXT));
+		}
+		
+		return criterias;
 	}
 
 }
