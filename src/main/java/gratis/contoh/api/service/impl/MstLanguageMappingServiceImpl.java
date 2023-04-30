@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,12 +37,13 @@ public class MstLanguageMappingServiceImpl implements MstLanguageMappingService 
 
 	@Override
 	@Transactional
+	@Cacheable
 	public Flux<MstLanguageMappingResponse> getAll() {
 		ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping> mapper = 
 				new ObjectMapperUtil<MstLanguageMappingResponse, MstLanguageMapping>();
 		
 		return this.mstLanguageMappingRepository.findAllByDeletedAtIsNull()
-				.map(item -> mapper.convert(MstLanguageMappingResponse.class, item));
+				.map(item -> mapper.convert(MstLanguageMappingResponse.class, item)).cache();
 	}
 
 	@Override

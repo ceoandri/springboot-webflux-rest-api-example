@@ -1,3 +1,5 @@
+logging.level.org.springframework.cache=TRACE
+
 spring.r2dbc.url=r2dbc:postgresql://{host}:{port}/{db}
 spring.r2dbc.username=
 spring.r2dbc.password=
