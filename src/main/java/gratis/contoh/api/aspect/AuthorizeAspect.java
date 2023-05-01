@@ -1,6 +1,8 @@
 package gratis.contoh.api.aspect;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
+import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -20,7 +22,9 @@ import org.springframework.stereotype.Component;
 import com.auth0.jwt.algorithms.Algorithm;
 
 import gratis.contoh.api.constant.AuthTypes;
+import gratis.contoh.api.model.request.AuthenticationRequest;
 import gratis.contoh.api.repository.RedisDefaultRepository;
+import gratis.contoh.api.service.AuthenticationService;
 import gratis.contoh.api.util.annotation.Authorize;
 import gratis.contoh.api.util.jwt.Jwt;
 import gratis.contoh.api.util.jwt.JwtDetail;
@@ -37,6 +41,9 @@ public class AuthorizeAspect {
 	
 	@Value("${jtw.secret}") 
 	private String secret;
+	
+	@Autowired
+	private AuthenticationService authService;
 	
 	@Autowired
 	private RedisDefaultRepository redisDefaultRepository;
@@ -100,6 +107,13 @@ public class AuthorizeAspect {
 				throw new AccessDeniedException("you don't have permission to access this api");
 			}
 		}
+		case AuthTypes.BASIC: {
+			if (token.startsWith("Basic ")) {
+				return this.authorizeBasicAuth(token.split(" ")[1], roles, module, accessTypes);				
+			} else {
+				throw new AccessDeniedException("you don't have permission to access this api");
+			}
+		}
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + authType);
 		}
@@ -120,6 +134,34 @@ public class AuthorizeAspect {
 		return roleValidation(roles, detail.getRole())
 			.zipWith(moduleValidation(module, accessTypes, detail.getRole()))
 			.map(tuple -> tuple.getT1() && tuple.getT2());
+	}
+	
+	private Mono<Boolean> authorizeBasicAuth(
+			String token,
+			String[] roles, 
+			String module, 
+			String[] accessTypes) throws AccessDeniedException {
+		
+		byte[] decoded = Base64.getDecoder().decode(token);
+		String decodedStr = new String(decoded, StandardCharsets.UTF_8);
+		
+		String[] data = decodedStr.split(":");
+		if (data.length < 2) {
+			throw new AccessDeniedException("you don't have permission to access this api");
+		}
+
+		return this.authService.login(
+				Mono.just(AuthenticationRequest.builder()
+						.username(data[0])
+						.password(data[1]).build()))
+				.flatMap(response -> {
+					try {
+						return authorizeBearerAuth(response.getAccessToken(), 
+								roles, module, accessTypes);
+					} catch (AccessDeniedException e) {
+						return Mono.just(false);
+					}
+				});
 	}
 	
 	private Mono<Boolean> roleValidation(String[] roles, String role) 
