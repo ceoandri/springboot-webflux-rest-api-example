@@ -21,7 +21,7 @@ public @interface Authorize {
 
 	String[] roles() default {};
 	
-	String[] modules() default {};
+	String module() default "";
 	
 	String[] accessTypes() default {};
 	

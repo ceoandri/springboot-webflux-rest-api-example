@@ -38,10 +38,6 @@ public class MstLanguageMappingController {
 	
 	@GetMapping("")
 	@Tag(name = "Get All", description = "Retrive all data language mapping")
-	@Authorize(
-			roles = {Roles.SUPER_ADMIN, Roles.ADMIN, Roles.GUEST}, 
-			modules = {Modules.MST_LANGUAGE_MAPPING}, 
-			accessTypes = {AccessTypes.RETRIEVE})
 	public Mono<ResponseEntity<BaseResponse<List<MstLanguageMappingResponse>>>> getAll(
     		ServerHttpRequest serverHttpRequest) {
         return mstLanguageMappingService.getAll()
@@ -58,7 +54,7 @@ public class MstLanguageMappingController {
 	@Tag(name = "Get with Pagination", description = "Retrive data language mapping with pagination configuration")
 	@Authorize(
 			roles = {Roles.SUPER_ADMIN, Roles.ADMIN, Roles.GUEST}, 
-			modules = {Modules.MST_LANGUAGE_MAPPING}, 
+			module = Modules.MST_LANGUAGE_MAPPING, 
 			accessTypes = {AccessTypes.RETRIEVE})
 	public Mono<ResponseEntity<BaseResponse<PaginationResponse<MstLanguageMappingResponse>>>> getPaged(
 			ServerHttpRequest serverHttpRequest, 
@@ -76,7 +72,7 @@ public class MstLanguageMappingController {
 	@Tag(name = "Get By ID", description = "Retrive data language mapping by specific id")
 	@Authorize(
 			roles = {Roles.SUPER_ADMIN, Roles.ADMIN, Roles.GUEST}, 
-			modules = {Modules.MST_LANGUAGE_MAPPING}, 
+			module = Modules.MST_LANGUAGE_MAPPING,
 			accessTypes = {AccessTypes.RETRIEVE})
 	public Mono<ResponseEntity<BaseResponse<MstLanguageMappingResponse>>> getById(
     		ServerHttpRequest serverHttpRequest,
@@ -104,7 +100,7 @@ public class MstLanguageMappingController {
 	@Tag(name = "Create/Edit", description = "create new or edit existing data language mapping")
 	@Authorize(
 			roles = {Roles.SUPER_ADMIN, Roles.ADMIN}, 
-			modules = {Modules.MST_LANGUAGE_MAPPING}, 
+			module = Modules.MST_LANGUAGE_MAPPING,
 			accessTypes = {AccessTypes.CREATE, AccessTypes.UPDATE})
 	public Mono<ResponseEntity<BaseResponse<MstLanguageMappingResponse>>> post(
     		ServerHttpRequest serverHttpRequest,
@@ -122,7 +118,7 @@ public class MstLanguageMappingController {
 	@Tag(name = "Delete", description = "soft delete existing data language mapping")
 	@Authorize(
 			roles = {Roles.SUPER_ADMIN, Roles.ADMIN}, 
-			modules = {Modules.MST_LANGUAGE_MAPPING}, 
+			module = Modules.MST_LANGUAGE_MAPPING,
 			accessTypes = {AccessTypes.DELETE})
 	public Mono<ResponseEntity<BaseResponse<MstLanguageMappingResponse>>> delete(
     		ServerHttpRequest serverHttpRequest,

@@ -2,6 +2,7 @@ package gratis.contoh.api.aspect;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.security.sasl.AuthenticationException;
 
@@ -11,13 +12,19 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 
+import com.auth0.jwt.algorithms.Algorithm;
+
 import gratis.contoh.api.constant.AuthTypes;
-import gratis.contoh.api.service.AuthenticationService;
+import gratis.contoh.api.repository.RedisDefaultRepository;
 import gratis.contoh.api.util.annotation.Authorize;
+import gratis.contoh.api.util.jwt.Jwt;
+import gratis.contoh.api.util.jwt.JwtDetail;
+import reactor.core.publisher.Mono;
 
 @Aspect
 @Component
@@ -25,8 +32,14 @@ public class AuthorizeAspect {
 	
 	private static final Logger logger = LoggerFactory.getLogger(AuthorizeAspect.class);
 	
+	@Value("${app.name}") 
+	private String issuer;
+	
+	@Value("${jtw.secret}") 
+	private String secret;
+	
 	@Autowired
-	private AuthenticationService authService;
+	private RedisDefaultRepository redisDefaultRepository;
 	
 	@Pointcut("args(request,..)")
 	private void serverHttpRequest(ServerHttpRequest request) {}
@@ -36,7 +49,7 @@ public class AuthorizeAspect {
 
 	@Before("authorizeData(authorize) && serverHttpRequest(request)")
 	public void before(Authorize authorize, ServerHttpRequest request) 
-			throws AccessDeniedException, AuthenticationException {
+			throws AccessDeniedException, AuthenticationException, InterruptedException, ExecutionException {
 		if (!(request instanceof ServerHttpRequest)) {
 			throw new RuntimeException("request should be HttpServletRequesttype");
 		}
@@ -44,17 +57,13 @@ public class AuthorizeAspect {
 		String headerName = authorize.header();
 		String authType = authorize.authType();
 		String[] roles = authorize.roles();
-		String[] modules = authorize.modules();
+		String module = authorize.module();
 		String[] accessTypes = authorize.accessTypes();
 		
 		logger.info("header name " + headerName);
 		
 		for (int i = 0 ; i < roles.length; i++) {
 			logger.info("roles name " + roles[i]);
-		}
-		
-		for (int i = 0 ; i < modules.length; i++) {
-			logger.info("modules name " + modules[i]);
 		}
 		
 		for (int i = 0 ; i < accessTypes.length; i++) {
@@ -65,43 +74,112 @@ public class AuthorizeAspect {
 		List<String> token = headers.get(headerName);
 		
 		if (token != null) {
-			if (!authorizeToken(authType, token.get(0), roles, modules, accessTypes)) {
+			String bearer = token.get(0);
+			boolean res = this.authorizeToken(authType, bearer, roles, module, accessTypes).toFuture().get();
+			
+			if (!res) {
 				throw new AccessDeniedException("you don't have permission to access this api");
 			}
+				
 		} else {
 			throw new AuthenticationException("please login to access this api");
 		}
 	}
 	
-	private boolean authorizeToken(
+	private Mono<Boolean> authorizeToken(
 			String authType, 
 			String token, 
 			String[] roles, 
-			String[] modules, 
-			String[] accessTypes) {
+			String module, 
+			String[] accessTypes) throws AccessDeniedException {
 		switch (authType) {
 		case AuthTypes.BEARER: {
-			return authorizeBearerAuth(token, roles, modules, accessTypes);
+			if (token.startsWith("Bearer ")) {
+				return this.authorizeBearerAuth(token.split(" ")[1], roles, module, accessTypes);				
+			} else {
+				throw new AccessDeniedException("you don't have permission to access this api");
+			}
 		}
 		case AuthTypes.BASIC: {
-			return authorizeBasicAuth(token);
+			return this.authorizeBasicAuth(token);
 		}
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + authType);
 		}
 	}
 	
-	private boolean authorizeBearerAuth(
+	private Mono<Boolean> authorizeBearerAuth(
 			String token, 
 			String[] roles, 
-			String[] modules, 
-			String[] accessTypes) {
-		return true;
+			String module, 
+			String[] accessTypes) throws AccessDeniedException {
+		Jwt jwt = new Jwt(issuer, Algorithm.HMAC512(secret));
+		
+		JwtDetail detail = jwt.validateAndGetDetail(token);
+		if (detail == null) {
+			throw new AccessDeniedException("you don't have permission to access this api");
+		}
+		
+		return roleValidation(roles, detail.getRole())
+			.zipWith(moduleValidation(module, accessTypes, detail.getRole()))
+			.map(tuple -> tuple.getT1() && tuple.getT2());
 	}
 	
-	private boolean authorizeBasicAuth(String token) {
+	private Mono<Boolean> authorizeBasicAuth(String token) throws AccessDeniedException {
+		return Mono.just(true);
+	}
+	
+	private Mono<Boolean> roleValidation(String[] roles, String role) 
+			throws AccessDeniedException {
+		if (roles.length != 0) {
+			return isRoleExist(roles, role);
+		}
 		
+		return Mono.just(true);
+	}
+	
+	private Mono<Boolean> isRoleExist(String[] roles, String role) 
+			throws AccessDeniedException {
+		for(String item : roles) {
+			if (item.equals(role)) {
+				return Mono.just(true);
+			}
+		}
 		
-		return true;
+		throw new AccessDeniedException("you don't have permission to access this api");
+	}
+	
+	private Mono<Boolean> moduleValidation(String module, String[] accessTypes, String role) 
+			throws AccessDeniedException {
+		if (!module.isBlank() && !module.isEmpty()) {
+			return isModuleExist(module, accessTypes, role);
+		}
+		return Mono.just(true);
+	}
+	
+	private Mono<Boolean> isModuleExist(String module, String[] accessTypes, String role) 
+			throws AccessDeniedException {
+		String key = "role_permission__" + role + "__" + module;
+		return this.redisDefaultRepository.get(key)
+				.zipWhen(permission -> accessTypeValidation(accessTypes, permission))
+				.map(tuple -> tuple.getT2());
+	}
+	
+	private Mono<Boolean> accessTypeValidation(String[] accessTypes, String permission) {
+		if (accessTypes.length != 0) {
+			return isAccessTypeExist(accessTypes, permission);
+		}
+		
+		return Mono.just(true);
+	}
+	
+	private Mono<Boolean> isAccessTypeExist(String[] accessTypes, String permission) {
+		for(String accessType : accessTypes) {
+			if (permission.contains(accessType)) {
+				return Mono.just(true);
+			}
+		}
+		
+		return Mono.just(false);
 	}
 }
