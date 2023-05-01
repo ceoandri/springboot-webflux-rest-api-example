@@ -27,12 +27,14 @@ public class MstLanguageMappingLoader {
 		ObjectMapper<MstLanguageMapping, gratis.contoh.api.model.MstLanguageMapping> mapper = 
 				new ObjectMapper<MstLanguageMapping, gratis.contoh.api.model.MstLanguageMapping>();
 		
-		this.reactiveRepository.findAllByDeletedAtIsNull()
+		this.redisRepository.deletePattern("mst_language_mapping__")
+		.thenMany(this.reactiveRepository.findAllByDeletedAtIsNull()
 				.map(item -> mapper.convert(MstLanguageMapping.class, item))
 				.flatMap(item -> this.redisRepository.set("mst_language_mapping__" + item.getMapping(), item))
-				.thenMany(this.redisRepository.getAll("mst_language_mapping__"))
-				.subscribe(item -> logger.info(
-						"Key : " + item.getMapping() + ", Id: " + item.getId() + ", En: " + item.getEn()));
+		)
+		.thenMany(this.redisRepository.getAll("mst_language_mapping__"))
+		.subscribe(item -> logger.info(
+				"Key : " + item.getMapping() + ", Id: " + item.getId() + ", En: " + item.getEn()));
 		
 	}
 

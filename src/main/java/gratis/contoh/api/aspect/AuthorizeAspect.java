@@ -10,11 +10,13 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 
 import gratis.contoh.api.constant.AuthTypes;
+import gratis.contoh.api.service.AuthenticationService;
 import gratis.contoh.api.util.annotation.Authorize;
 
 @Aspect
@@ -22,6 +24,9 @@ import gratis.contoh.api.util.annotation.Authorize;
 public class AuthorizeAspect {
 	
 	private static final Logger logger = LoggerFactory.getLogger(AuthorizeAspect.class);
+	
+	@Autowired
+	private AuthenticationService authService;
 	
 	@Pointcut("args(request,..)")
 	private void serverHttpRequest(ServerHttpRequest request) {}
@@ -95,6 +100,8 @@ public class AuthorizeAspect {
 	}
 	
 	private boolean authorizeBasicAuth(String token) {
+		
+		
 		return true;
 	}
 }
