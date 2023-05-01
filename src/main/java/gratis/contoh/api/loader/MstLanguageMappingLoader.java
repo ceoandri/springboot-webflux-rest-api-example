@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import gratis.contoh.api.model.redis.MstLanguageMapping;
 import gratis.contoh.api.repository.MstLanguageMappingRepository;
+import gratis.contoh.api.repository.RedisDefaultRepository;
 import gratis.contoh.api.repository.RedisMstLanguageMappingRepository;
 import gratis.contoh.api.util.mapper.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -15,6 +16,9 @@ import jakarta.annotation.PostConstruct;
 public class MstLanguageMappingLoader {
 	
 	private static final Logger logger = LoggerFactory.getLogger(MstLanguageMappingLoader.class);
+
+	@Autowired
+	private RedisDefaultRepository redisDefaultRepository;
 
 	@Autowired
 	private RedisMstLanguageMappingRepository redisRepository;
@@ -27,7 +31,9 @@ public class MstLanguageMappingLoader {
 		ObjectMapper<MstLanguageMapping, gratis.contoh.api.model.MstLanguageMapping> mapper = 
 				new ObjectMapper<MstLanguageMapping, gratis.contoh.api.model.MstLanguageMapping>();
 		
-		this.redisRepository.deletePattern("mst_language_mapping__")
+		logger.info("Preparing for fetching mst_language_mapping data");
+		
+		this.redisDefaultRepository.deletePattern("mst_language_mapping__")
 		.thenMany(this.reactiveRepository.findAllByDeletedAtIsNull()
 				.map(item -> mapper.convert(MstLanguageMapping.class, item))
 				.flatMap(item -> this.redisRepository.set("mst_language_mapping__" + item.getMapping(), item))

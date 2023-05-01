@@ -8,8 +8,6 @@ public interface RedisMstLanguageMappingRepository {
 	
 	Mono<MstLanguageMapping> set(String id, MstLanguageMapping item);
 	Mono<MstLanguageMapping> get(String id);
-	Flux<MstLanguageMapping> getAll(String containsId);
-	Mono<Long> delete(String id);
-	Flux<Long> deletePattern(String pattern);
+	Flux<MstLanguageMapping> getAll(String pattern);
 
 }
