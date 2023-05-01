@@ -9,8 +9,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
-import gratis.contoh.api.model.JwtDetail;
-
 public class Jwt {
 	private static final Duration JWT_TOKEN_VALIDITY_ONE_HOUR = Duration.ofHours(1);
 	private static final Duration JWT_TOKEN_VALIDITY_ONE_YEAR = Duration.ofDays(365);

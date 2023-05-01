@@ -1,4 +1,4 @@
-package gratis.contoh.api.model;
+package gratis.contoh.api.util.jwt;
 
 import java.io.Serializable;
 

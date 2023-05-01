@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.algorithms.Algorithm;
 
-import gratis.contoh.api.model.JwtDetail;
 import gratis.contoh.api.model.MstUser;
 import gratis.contoh.api.model.request.AuthenticationRequest;
 import gratis.contoh.api.model.response.AuthenticationResponse;
 import gratis.contoh.api.repository.MstUserRepository;
 import gratis.contoh.api.service.AuthenticationService;
 import gratis.contoh.api.util.jwt.Jwt;
+import gratis.contoh.api.util.jwt.JwtDetail;
 import gratis.contoh.api.util.mapper.ObjectMapper;
 import reactor.core.publisher.Mono;
 
