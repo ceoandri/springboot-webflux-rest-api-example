@@ -100,9 +100,6 @@ public class AuthorizeAspect {
 				throw new AccessDeniedException("you don't have permission to access this api");
 			}
 		}
-		case AuthTypes.BASIC: {
-			return this.authorizeBasicAuth(token);
-		}
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + authType);
 		}
@@ -123,10 +120,6 @@ public class AuthorizeAspect {
 		return roleValidation(roles, detail.getRole())
 			.zipWith(moduleValidation(module, accessTypes, detail.getRole()))
 			.map(tuple -> tuple.getT1() && tuple.getT2());
-	}
-	
-	private Mono<Boolean> authorizeBasicAuth(String token) throws AccessDeniedException {
-		return Mono.just(true);
 	}
 	
 	private Mono<Boolean> roleValidation(String[] roles, String role) 
