@@ -4,6 +4,8 @@ import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.security.sasl.AuthenticationException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,6 +46,21 @@ public class RestExceptionHandler {
 				.build();
 	    return Mono.just(ResponseEntity
 	    		.status(HttpStatus.FORBIDDEN)
+	    		.body(errorResponse));
+	}
+	
+	@ExceptionHandler(AuthenticationException.class)
+	public Mono<ResponseEntity<Object>> handleAuthenticationException(AuthenticationException ex) {
+		List<String> errors = new ArrayList<String>();
+		errors.add(ex.getMessage());
+	    
+		BaseResponse<String> errorResponse = BaseResponse.<String>builder()
+				.errors(errors)
+				.message(HttpStatus.UNAUTHORIZED.name())
+				.status(HttpStatus.UNAUTHORIZED.value())
+				.build();
+	    return Mono.just(ResponseEntity
+	    		.status(HttpStatus.UNAUTHORIZED)
 	    		.body(errorResponse));
 	}
 }

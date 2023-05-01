@@ -3,6 +3,8 @@ package gratis.contoh.api.aspect;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 
+import javax.security.sasl.AuthenticationException;
+
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -12,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 
+import gratis.contoh.api.constant.AuthTypes;
 import gratis.contoh.api.util.annotation.Authorize;
 
 @Aspect
@@ -27,12 +30,14 @@ public class AuthorizeAspect {
 	private void authorizeData(Authorize authorize) {}
 
 	@Before("authorizeData(authorize) && serverHttpRequest(request)")
-	public void before(Authorize authorize, ServerHttpRequest request) throws AccessDeniedException{
+	public void before(Authorize authorize, ServerHttpRequest request) 
+			throws AccessDeniedException, AuthenticationException {
 		if (!(request instanceof ServerHttpRequest)) {
 			throw new RuntimeException("request should be HttpServletRequesttype");
 		}
 		
 		String headerName = authorize.header();
+		String authType = authorize.authType();
 		String[] roles = authorize.roles();
 		String[] modules = authorize.modules();
 		String[] accessTypes = authorize.accessTypes();
@@ -55,13 +60,41 @@ public class AuthorizeAspect {
 		List<String> token = headers.get(headerName);
 		
 		if (token != null) {
-			for (int i = 0 ; i < token.size(); i++) {
-				logger.info("token " + token.get(i));
+			if (!authorizeToken(authType, token.get(0), roles, modules, accessTypes)) {
+				throw new AccessDeniedException("you don't have permission to access this api");
 			}
-			
-			// TODO add implementation for check token
 		} else {
-			throw new AccessDeniedException("you don't have permission to access this api");
+			throw new AuthenticationException("please login to access this api");
 		}
-	} 
+	}
+	
+	private boolean authorizeToken(
+			String authType, 
+			String token, 
+			String[] roles, 
+			String[] modules, 
+			String[] accessTypes) {
+		switch (authType) {
+		case AuthTypes.BEARER: {
+			return authorizeBearerAuth(token, roles, modules, accessTypes);
+		}
+		case AuthTypes.BASIC: {
+			return authorizeBasicAuth(token);
+		}
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + authType);
+		}
+	}
+	
+	private boolean authorizeBearerAuth(
+			String token, 
+			String[] roles, 
+			String[] modules, 
+			String[] accessTypes) {
+		return true;
+	}
+	
+	private boolean authorizeBasicAuth(String token) {
+		return true;
+	}
 }
