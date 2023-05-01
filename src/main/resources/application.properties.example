@@ -1,4 +1,8 @@
-logging.level.org.springframework.cache=TRACE
+app.name=
+
+jtw.secret=
+
+logging.level.org.springframework.cache=
 
 spring.data.redis.host=
 spring.data.redis.port=

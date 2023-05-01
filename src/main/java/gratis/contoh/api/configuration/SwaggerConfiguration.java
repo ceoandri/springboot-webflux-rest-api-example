@@ -21,5 +21,17 @@ public class SwaggerConfiguration {
 				.pathsToMatch(paths)
 				.build();
 	}
+	
+	@Bean
+	public GroupedOpenApi authOpenApi(
+			@Value("${springdoc.version}") String appVersion) {
+		String[] paths = { "/api/v1/auth/**" };
+		return GroupedOpenApi.builder().
+				group("auth v1")
+				.addOpenApiCustomizer(openApi -> openApi.info(new Info()
+						.title("Authentication API Documentation").version(appVersion)))
+				.pathsToMatch(paths)
+				.build();
+	}
 
 }
