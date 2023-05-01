@@ -6,9 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 
 @Configuration
@@ -22,12 +21,9 @@ public class SwaggerConfiguration {
 				group("mst-language-mapping v1")
 				.addOpenApiCustomizer(openApi -> {
 					final String securitySchemeName = "Access Token";
-					
 					openApi.info(new Info()
 							.title("Master Language Mapping API Documentation").version(appVersion))
-					.addSecurityItem(
-							new io.swagger.v3.oas.models.security.SecurityRequirement()
-							.addList(securitySchemeName))
+					.addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
 					.getComponents().addSecuritySchemes(securitySchemeName, new SecurityScheme()
 			            .type(SecurityScheme.Type.APIKEY)
 			            .in(SecurityScheme.In.HEADER)
