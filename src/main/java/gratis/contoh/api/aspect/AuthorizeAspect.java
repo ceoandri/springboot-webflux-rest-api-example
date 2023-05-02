@@ -10,8 +10,6 @@ import javax.security.sasl.AuthenticationException;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -32,8 +30,6 @@ import reactor.core.publisher.Mono;
 @Aspect
 @Component
 public class AuthorizeAspect {
-	
-	private static final Logger logger = LoggerFactory.getLogger(AuthorizeAspect.class);
 	
 	@Value("${app.name}") 
 	private String issuer;
@@ -65,18 +61,9 @@ public class AuthorizeAspect {
 		String[] roles = authorize.roles();
 		String module = authorize.module();
 		String[] accessTypes = authorize.accessTypes();
-		
-		logger.info("header name " + headerName);
-		
-		for (int i = 0 ; i < roles.length; i++) {
-			logger.info("roles name " + roles[i]);
-		}
-		
-		for (int i = 0 ; i < accessTypes.length; i++) {
-			logger.info("accessTypes name " + accessTypes[i]);
-		}
 
 		String token = HttpRequest.getHeader(request, headerName);
+		
 		if (token != null) {
 			boolean res = this.authorizeToken(authType, token, roles, module, accessTypes).toFuture().get();
 			

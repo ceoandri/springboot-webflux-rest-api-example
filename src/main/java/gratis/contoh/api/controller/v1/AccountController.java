@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gratis.contoh.api.model.response.BaseResponse;
 import gratis.contoh.api.model.response.PermissionResponse;
+import gratis.contoh.api.model.response.ProfileResponse;
 import gratis.contoh.api.service.AccountService;
 import gratis.contoh.api.util.annotation.Authorize;
 import gratis.contoh.api.util.web.HttpRequest;
@@ -36,7 +37,7 @@ public class AccountController {
 		error.add("you don't have permission to access this api");
 		
 		String token = HttpRequest.getHeader(serverHttpRequest, HttpHeaders.AUTHORIZATION);
-		
+
         return accService.currentPermission(token)
         		.collectList()
         		.map(item -> ResponseEntity
@@ -53,5 +54,31 @@ public class AccountController {
         						.errors(error)
         						.build()));
 	}
-
+	
+	@GetMapping("/profile")
+	@Tag(name = "Get Current Permission", description = "Retrive all data permission of the user")
+	@Authorize
+	public Mono<ResponseEntity<BaseResponse<ProfileResponse>>> getProfile(
+    		ServerHttpRequest serverHttpRequest) {
+		List<String> error = new ArrayList<String>();
+		error.add("you don't have permission to access this api");
+		
+		String token = HttpRequest.getHeader(serverHttpRequest, HttpHeaders.AUTHORIZATION);
+		
+        return accService.profile(token)
+        		.map(item -> ResponseEntity
+        				.ok(BaseResponse.<ProfileResponse>builder()
+        						.status(HttpStatus.OK.value())
+        						.message("success")
+        						.data(item)
+        						.build()))
+        		.defaultIfEmpty(ResponseEntity
+        				.status(HttpStatus.FORBIDDEN)
+        				.body(BaseResponse.<ProfileResponse>builder()
+        						.status(HttpStatus.FORBIDDEN.value())
+        						.message(HttpStatus.FORBIDDEN.name())
+        						.errors(error)
+        						.build()));
+	}
+	
 }

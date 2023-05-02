@@ -1,7 +1,6 @@
 package gratis.contoh.api.util.annotation;
 
 import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
@@ -12,7 +11,7 @@ import org.springframework.http.HttpHeaders;
 import gratis.contoh.api.constant.AuthTypes;
 
 @Retention(RUNTIME)
-@Target({ TYPE, METHOD })
+@Target({ METHOD })
 public @interface Authorize {
 
 	String header() default HttpHeaders.AUTHORIZATION;
