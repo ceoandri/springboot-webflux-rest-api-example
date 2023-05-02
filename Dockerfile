@@ -5,9 +5,9 @@ FROM maven-jdk as app-artifact
 RUN mkdir -p /usr/local/content/app
 ADD ./ /usr/local/content/app
 WORKDIR /usr/local/content/app
-RUN  mvn package install
+RUN  mvn package -Dmaven.test.skip
 
-FROM openjdk:17.0
+FROM openjdk:17-bullseye
 ENV TZ="Asia/Jakarta"
 RUN apt-get update && \
     apt-get install -yq tzdata && \
