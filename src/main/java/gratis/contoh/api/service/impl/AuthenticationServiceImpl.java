@@ -41,7 +41,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				.zipWhen(request -> this.mstUserRepo.findById(request.getUsername()))
 				.flatMap(tuple -> {
 					AuthenticationRequest req = tuple.getT1();
-					Boolean isRememberMe = req.getRememberMe();
+					Boolean isRememberMe = req.getRememberMe() == null ? false : req.getRememberMe();
 					MstUser user = tuple.getT2();
 					
 					if (!encoder.matches(req.getPassword(), user.getPassword())) {
