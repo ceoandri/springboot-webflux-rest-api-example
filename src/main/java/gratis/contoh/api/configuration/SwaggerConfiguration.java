@@ -44,5 +44,25 @@ public class SwaggerConfiguration {
 				.pathsToMatch(paths)
 				.build();
 	}
+	
+	@Bean
+	public GroupedOpenApi accountOpenApi(
+			@Value("${springdoc.version}") String appVersion) {
+		String[] paths = { "/api/v1/account/**" };
+		return GroupedOpenApi.builder().
+				group("account v1")
+				.addOpenApiCustomizer(openApi -> {
+					final String securitySchemeName = "Access Token";
+					openApi.info(new Info()
+							.title("Account API Documentation").version(appVersion))
+					.addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
+					.getComponents().addSecuritySchemes(securitySchemeName, new SecurityScheme()
+			            .type(SecurityScheme.Type.APIKEY)
+			            .in(SecurityScheme.In.HEADER)
+			            .name(HttpHeaders.AUTHORIZATION));
+				})
+				.pathsToMatch(paths)
+				.build();
+	}
 
 }

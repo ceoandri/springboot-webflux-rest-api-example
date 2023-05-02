@@ -3,7 +3,6 @@ package gratis.contoh.api.aspect;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
 import java.util.Base64;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.security.sasl.AuthenticationException;
@@ -15,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +26,7 @@ import gratis.contoh.api.service.AuthenticationService;
 import gratis.contoh.api.util.annotation.Authorize;
 import gratis.contoh.api.util.jwt.Jwt;
 import gratis.contoh.api.util.jwt.JwtDetail;
+import gratis.contoh.api.util.web.HttpRequest;
 import reactor.core.publisher.Mono;
 
 @Aspect
@@ -77,12 +76,9 @@ public class AuthorizeAspect {
 			logger.info("accessTypes name " + accessTypes[i]);
 		}
 
-		HttpHeaders headers = request.getHeaders();
-		List<String> token = headers.get(headerName);
-		
+		String token = HttpRequest.getHeader(request, headerName);
 		if (token != null) {
-			String bearer = token.get(0);
-			boolean res = this.authorizeToken(authType, bearer, roles, module, accessTypes).toFuture().get();
+			boolean res = this.authorizeToken(authType, token, roles, module, accessTypes).toFuture().get();
 			
 			if (!res) {
 				throw new AccessDeniedException("you don't have permission to access this api");

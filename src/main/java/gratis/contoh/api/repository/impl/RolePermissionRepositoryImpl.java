@@ -1,5 +1,6 @@
 package gratis.contoh.api.repository.impl;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -11,6 +12,8 @@ import gratis.contoh.api.model.RolePermission;
 import gratis.contoh.api.repository.CustomRolePermissionRepository;
 import gratis.contoh.api.repository.query.RolePermissionQuery;
 import gratis.contoh.api.util.mapper.ObjectMapper;
+import gratis.contoh.api.util.querybuilder.Criteria;
+import gratis.contoh.api.util.querybuilder.QueryBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -28,6 +31,22 @@ public class RolePermissionRepositoryImpl implements CustomRolePermissionReposit
 	@Override
 	public Flux<RolePermission> findAll() {
 		String query = RolePermissionQuery.getRolePermission;
+		
+		logger.info("preparing for execute statement " + query);
+
+		ObjectMapper<RolePermission, Map<String, Object>> mapper = 
+				new ObjectMapper<RolePermission, Map<String, Object>>();
+		
+		return databaseClient.sql(query)
+                .fetch()
+                .all()
+                .flatMap(item -> Mono.just(mapper.convert(RolePermission.class, item)));
+	}
+
+	@Override
+	public Flux<RolePermission> findAll(ArrayList<Criteria> criterias) {
+		String base = RolePermissionQuery.getRolePermission;
+		String query = QueryBuilder.builder(base, criterias);
 		
 		logger.info("preparing for execute statement " + query);
 
