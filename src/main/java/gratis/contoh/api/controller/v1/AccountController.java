@@ -1,5 +1,6 @@
 package gratis.contoh.api.controller.v1;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,9 @@ public class AccountController {
 	@Authorize
 	public Mono<ResponseEntity<BaseResponse<List<PermissionResponse>>>> getCurrentPermission(
     		ServerHttpRequest serverHttpRequest) {
-
+		List<String> error = new ArrayList<String>();
+		error.add("you don't have permission to access this api");
+		
 		String token = HttpRequest.getHeader(serverHttpRequest, HttpHeaders.AUTHORIZATION);
 		
         return accService.currentPermission(token)
@@ -41,6 +44,13 @@ public class AccountController {
         						.status(HttpStatus.OK.value())
         						.message("success")
         						.data(item)
+        						.build()))
+        		.defaultIfEmpty(ResponseEntity
+        				.status(HttpStatus.FORBIDDEN)
+        				.body(BaseResponse.<List<PermissionResponse>>builder()
+        						.status(HttpStatus.FORBIDDEN.value())
+        						.message(HttpStatus.FORBIDDEN.name())
+        						.errors(error)
         						.build()));
 	}
 

@@ -15,7 +15,7 @@ import gratis.contoh.api.model.redis.MstLanguageMapping;
 public class RedisConfiguration {
 	
 	@Bean
-	ReactiveRedisOperations<String, MstLanguageMapping> MstLanguageMappingOperations(
+	ReactiveRedisOperations<String, MstLanguageMapping> mstLanguageMappingOperations(
 			ReactiveRedisConnectionFactory factory) {
 		Jackson2JsonRedisSerializer<MstLanguageMapping> serializer = 
 				new Jackson2JsonRedisSerializer<>(MstLanguageMapping.class);

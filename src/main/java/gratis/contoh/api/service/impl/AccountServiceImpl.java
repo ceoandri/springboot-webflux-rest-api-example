@@ -36,7 +36,7 @@ public class AccountServiceImpl implements AccountService {
 		Jwt jwt = new Jwt(issuer, Algorithm.HMAC512(secret));
 		
 		if (!token.startsWith("Bearer ")) {	
-			return Flux.just(new PermissionResponse());
+			return Flux.just(new PermissionResponse()).filter(item -> item.getModule() != null);
 		}
 		
 		JwtDetail detail = jwt.validateAndGetDetail(token.split(" ")[1]);
