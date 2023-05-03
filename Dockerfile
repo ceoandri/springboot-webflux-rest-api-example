@@ -14,5 +14,5 @@ RUN apt-get update && \
     ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && \
 	dpkg-reconfigure -f noninteractive tzdata
 EXPOSE 8080
-COPY --from=app-artifact /usr/local/content/app/target/*.jar springboot-webflux.api.jar
-ENTRYPOINT ["java","-jar","/springboot-webflux.api.jar"]
+COPY --from=app-artifact /usr/local/content/app/target/*.jar springboot-webflux-api.jar
+ENTRYPOINT ["java","-jar","/springboot-webflux-api.jar"]

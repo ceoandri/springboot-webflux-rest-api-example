@@ -128,7 +128,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>springboot-webflux.api</finalName>
+		<finalName>springboot-webflux-api</finalName>
 	</build>
 
 </project>
