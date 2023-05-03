@@ -126,6 +126,12 @@ public class QueryBuilder {
 		case IS_NOT_NULL: {
 			return "IS NOT NULL";
 		}
+		case IN: {
+			return String.format("IN (%s)", arrayConditionHandler(criteria.getValueType(), criteria.getValue()));
+		}
+		case NOT_IN: {
+			return String.format("NOT IN (%s)", arrayConditionHandler(criteria.getValueType(), criteria.getValue()));
+		}
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + criteria.getCondition());
 		}
@@ -134,13 +140,13 @@ public class QueryBuilder {
 	private static String valueTypeHandler(ValueType valueType, String value) {
 		switch (valueType) {
 		case TEXT: {
-			return String.format("%s%s%s", "'", value, "'");
+			return String.format("'%s'", value);
 		}
 		case NUMBER: {
 			return value;
 		}
 		case DATE: {
-			return String.format("%s%s%s", "'", value, "'");
+			return String.format("'%s'", value);
 		}
 		case TIMESTAMP: {
 			return value;
@@ -148,6 +154,16 @@ public class QueryBuilder {
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + valueType);
 		}
+	}
+
+	private static String arrayConditionHandler(ValueType valueType, String[] value) {
+		String result = "";
+
+		for (int i = 0; i < value.length; i++) {
+			result += "," + valueTypeHandler(valueType, value[i]);
+		}
+
+		return result.substring(1);
 	}
 	
 	private static String generatePagination(PaginationRequest paginationRequest) {

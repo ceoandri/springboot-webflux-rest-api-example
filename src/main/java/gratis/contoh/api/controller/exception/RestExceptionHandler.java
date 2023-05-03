@@ -2,10 +2,12 @@ package gratis.contoh.api.controller.exception;
 
 import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.security.sasl.AuthenticationException;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -61,6 +63,35 @@ public class RestExceptionHandler {
 				.build();
 	    return Mono.just(ResponseEntity
 	    		.status(HttpStatus.UNAUTHORIZED)
+	    		.body(errorResponse));
+	}
+	
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public Mono<ResponseEntity<Object>> handleDataIntegrityException(DataIntegrityViolationException ex) {
+		List<String> errors = new ArrayList<String>();
+		errors.add(ex.getMessage());
+	    
+		BaseResponse<String> errorResponse = BaseResponse.<String>builder()
+				.errors(errors)
+				.message(HttpStatus.CONFLICT.name())
+				.status(HttpStatus.CONFLICT.value())
+				.build();
+	    return Mono.just(ResponseEntity
+	    		.status(HttpStatus.CONFLICT)
+	    		.body(errorResponse));
+	}
+	
+	@ExceptionHandler(BadRequestException.class)
+	public Mono<ResponseEntity<Object>> handleBadRequestException(BadRequestException ex) {
+		List<String> errors = Arrays.asList(ex.getMessage().split(","));
+	    
+		BaseResponse<String> errorResponse = BaseResponse.<String>builder()
+				.errors(errors)
+				.message(HttpStatus.BAD_REQUEST.name())
+				.status(HttpStatus.BAD_REQUEST.value())
+				.build();
+	    return Mono.just(ResponseEntity
+	    		.status(HttpStatus.BAD_REQUEST)
 	    		.body(errorResponse));
 	}
 }

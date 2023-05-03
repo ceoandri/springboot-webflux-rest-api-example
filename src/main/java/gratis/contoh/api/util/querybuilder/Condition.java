@@ -12,5 +12,7 @@ public enum Condition {
 	LESS_THAN_EQUALS,
 	BETWEEN,
 	IS_NULL,
-	IS_NOT_NULL
+	IS_NOT_NULL,
+	IN,
+	NOT_IN
 }

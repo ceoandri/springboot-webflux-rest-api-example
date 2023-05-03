@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import gratis.contoh.api.model.dto.MstUserDto;
 import gratis.contoh.api.model.request.AuthenticationRequest;
 import gratis.contoh.api.model.response.AuthenticationResponse;
 import gratis.contoh.api.model.response.BaseResponse;
+import gratis.contoh.api.model.response.MstUserResponse;
 import gratis.contoh.api.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -48,6 +50,21 @@ public class AuthenticationController {
         						.status(HttpStatus.UNAUTHORIZED.value())
         						.message(HttpStatus.UNAUTHORIZED.name())
         						.errors(error)
+        						.build()));
+	}
+	
+	@PostMapping("/init")
+	@Tag(name = "Init User", description = "create user to be able login and access resource")
+	public Mono<ResponseEntity<BaseResponse<MstUserResponse>>> init(
+    		ServerHttpRequest serverHttpRequest,
+    		@RequestBody @Valid Mono<MstUserDto> request) {
+		
+        return authService.init(request)
+        		.map(item -> ResponseEntity
+        				.ok(BaseResponse.<MstUserResponse>builder()
+        						.status(HttpStatus.OK.value())
+        						.message("success")
+        						.data(item)
         						.build()));
 	}
 
