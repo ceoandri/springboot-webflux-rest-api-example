@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gratis.contoh.api.constant.KeyPattern;
 import gratis.contoh.api.model.redis.MstLanguageMapping;
 import gratis.contoh.api.repository.MstLanguageMappingRepository;
 import gratis.contoh.api.repository.RedisDefaultRepository;
@@ -33,12 +34,13 @@ public class MstLanguageMappingLoader {
 		
 		logger.info("Preparing for fetching mst_language_mapping data");
 		
-		this.redisDefaultRepository.deletePattern("mst_language_mapping__")
+		this.redisDefaultRepository.deletePattern(KeyPattern.REDIS_MST_LANGUAGE_MAPPING)
 		.thenMany(this.reactiveRepository.findAllByDeletedAtIsNull()
 				.map(item -> mapper.convert(MstLanguageMapping.class, item))
-				.flatMap(item -> this.redisRepository.set("mst_language_mapping__" + item.getMapping(), item))
+				.flatMap(item -> this.redisRepository.set(
+						KeyPattern.REDIS_MST_LANGUAGE_MAPPING + item.getMapping(), item))
 		)
-		.thenMany(this.redisRepository.getAll("mst_language_mapping__"))
+		.thenMany(this.redisRepository.getAll(KeyPattern.REDIS_MST_LANGUAGE_MAPPING))
 		.subscribe(item -> logger.info(
 				"Key : " + item.getMapping() + ", Id: " + item.getId() + ", En: " + item.getEn()));
 		

@@ -16,6 +16,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 
 import gratis.contoh.api.constant.AuthTypes;
+import gratis.contoh.api.constant.KeyPattern;
 import gratis.contoh.api.model.request.AuthenticationRequest;
 import gratis.contoh.api.repository.RedisDefaultRepository;
 import gratis.contoh.api.service.AuthenticationService;
@@ -175,7 +176,7 @@ public class AuthorizeAspect {
 	
 	private Mono<Boolean> isModuleExist(String module, String[] accessTypes, String role) 
 			throws AccessDeniedException {
-		String key = "role_permission__" + role + "__" + module;
+		String key = KeyPattern.REDIS_ROLE_PERMISSION + role + "__" + module;
 		return this.redisDefaultRepository.get(key)
 				.zipWhen(permission -> accessTypeValidation(accessTypes, permission))
 				.map(tuple -> tuple.getT2());

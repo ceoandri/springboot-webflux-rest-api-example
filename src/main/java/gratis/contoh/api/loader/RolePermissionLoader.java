@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gratis.contoh.api.constant.KeyPattern;
 import gratis.contoh.api.repository.CustomRolePermissionRepository;
 import gratis.contoh.api.repository.RedisDefaultRepository;
 import jakarta.annotation.PostConstruct;
@@ -24,12 +25,12 @@ public class RolePermissionLoader {
 	public void loadData() {
 		logger.info("Preparing for fetching role permission data");
 		
-		this.redisDefaultRepository.deletePattern("role_permission__")
+		this.redisDefaultRepository.deletePattern(KeyPattern.REDIS_ROLE_PERMISSION)
 		.thenMany(this.reactiveRepository.findAll()
 				.flatMap(item -> this.redisDefaultRepository.set(
-						"role_permission__" + item.getRole() + "__" + item.getModule(), 
+						KeyPattern.REDIS_ROLE_PERMISSION + item.getRole() + "__" + item.getModule(), 
 						item.getPermission())))
-		.thenMany(this.redisDefaultRepository.getAll("role_permission__"))
+		.thenMany(this.redisDefaultRepository.getAll(KeyPattern.REDIS_ROLE_PERMISSION))
 		.subscribe(item -> logger.info(item));
 	}
 
