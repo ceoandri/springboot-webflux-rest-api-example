@@ -13,15 +13,26 @@ public class ObjectMapper<T, Z> {
 	private Gson gson = new GsonBuilder()
 			.registerTypeAdapter(Date.class, new GsonDateAdapter())
 			.registerTypeAdapter(LocalDateTime.class, new GsonLocalDateTimeAdapter())
-		    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
 		    .create();
+
+	public Gson getGson() {
+		return this.gson;
+	}
 	
-	public T convert(Class<T> classOfTarget, Z source) {
+	public T convert(Class<T> classOfTarget, 
+			Z source, 
+			FieldNamingPolicy... namingPolicy) {
+		reformGson(namingPolicy);
+		
 		T res = gson.fromJson(gson.toJson(source), classOfTarget);
 		return res;
 	}
 	
-	public List<T> convert(Class<T> classOfTarget, List<Z> source) {
+	public List<T> convert(Class<T> classOfTarget, 
+			List<Z> source, 
+			FieldNamingPolicy... namingPolicy) {
+		reformGson(namingPolicy);
+		
 		List<T> res = new ArrayList<T>();
 		
 		for (int i = 0; i < source.size(); i++) {			
@@ -29,6 +40,41 @@ public class ObjectMapper<T, Z> {
 		}
 		
 		return res;
+	}
+	
+	public T convert(Class<T> classOfTarget, 
+			String source, 
+			FieldNamingPolicy... namingPolicy) {
+		reformGson(namingPolicy);
+		T res = gson.fromJson(source, classOfTarget);
+		return res;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<T> convertToList(Class<T> classOfTarget, 
+			Object source, 
+			FieldNamingPolicy... namingPolicy) {
+		List<T> res = new ArrayList<T>();
+		
+		reformGson(namingPolicy);
+		
+		List<Object> sourceList = gson.fromJson(gson.toJson(source), List.class);
+		
+		for (int i = 0; i < sourceList.size(); i++) {	
+			res.add(gson.fromJson(gson.toJson(sourceList.get(i)), classOfTarget));
+		}
+		
+		return res;
+	}
+	
+	private void reformGson(FieldNamingPolicy... namingPolicy) {
+		if (namingPolicy.length > 0) {
+			gson = new GsonBuilder()
+					.registerTypeAdapter(Date.class, new GsonDateAdapter())
+					.registerTypeAdapter(LocalDateTime.class, new GsonLocalDateTimeAdapter())
+				    .setFieldNamingPolicy(namingPolicy[0])
+				    .create();
+		}
 	}
 	
 }
