@@ -15,8 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 
-import com.auth0.jwt.algorithms.Algorithm;
-
 import gratis.contoh.api.constant.AuthTypes;
 import gratis.contoh.api.model.request.AuthenticationRequest;
 import gratis.contoh.api.repository.RedisDefaultRepository;
@@ -107,7 +105,7 @@ public class AuthorizeAspect {
 			String[] roles, 
 			String module, 
 			String[] accessTypes) throws AccessDeniedException {
-		Jwt jwt = new Jwt(issuer, Algorithm.HMAC512(secret));
+		Jwt jwt = new Jwt(issuer, secret);
 		
 		JwtDetail detail = jwt.validateAndGetDetail(token);
 		if (detail == null) {

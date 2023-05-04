@@ -17,9 +17,9 @@ public class Jwt {
     private JWTVerifier verifier;
     private String issuer;
     
-    public Jwt(String issuer, Algorithm algorithm) {
+    public Jwt(String issuer, String secret) {
         this.issuer = issuer;
-        this.hmac512 = algorithm;
+        this.hmac512 = Algorithm.HMAC512(secret);
         this.verifier = JWT.require(this.hmac512).build();
     }
 

@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.auth0.jwt.algorithms.Algorithm;
-
 import gratis.contoh.api.model.response.PermissionResponse;
 import gratis.contoh.api.model.response.ProfileResponse;
 import gratis.contoh.api.repository.CustomRolePermissionRepository;
@@ -68,7 +66,7 @@ public class AccountServiceImpl implements AccountService {
 	}
 	
 	private Mono<JwtDetail> validateToken(String token) {
-		Jwt jwt = new Jwt(issuer, Algorithm.HMAC512(secret));
+		Jwt jwt = new Jwt(issuer, secret);
 		
 		if (!token.startsWith("Bearer ")) {	
 			return Mono.just(new JwtDetail()).filter(item -> item.getUsername() != null);

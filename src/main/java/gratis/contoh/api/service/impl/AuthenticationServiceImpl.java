@@ -6,8 +6,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.auth0.jwt.algorithms.Algorithm;
-
 import gratis.contoh.api.constant.Roles;
 import gratis.contoh.api.controller.exception.BadRequestException;
 import gratis.contoh.api.model.MstUser;
@@ -52,7 +50,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 						return Mono.justOrEmpty(null);
 					}
 					
-					Jwt jwtToken = new Jwt(issuer, Algorithm.HMAC512(secret));
+					Jwt jwtToken = new Jwt(issuer, secret);
 					
 					String token = jwtToken.generateToken(
 							mapper.convert(JwtDetail.class, user), isRememberMe);
