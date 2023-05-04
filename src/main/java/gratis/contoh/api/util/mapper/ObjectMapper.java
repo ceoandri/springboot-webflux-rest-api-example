@@ -28,7 +28,7 @@ public class ObjectMapper<T, Z> {
 		return res;
 	}
 	
-	public List<T> convert(Class<T> classOfTarget, 
+	public List<T> convertList(Class<T> classOfTarget, 
 			List<Z> source, 
 			FieldNamingPolicy... namingPolicy) {
 		reformGson(namingPolicy);
@@ -51,7 +51,7 @@ public class ObjectMapper<T, Z> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<T> convertToList(Class<T> classOfTarget, 
+	public List<T> convertList(Class<T> classOfTarget, 
 			Object source, 
 			FieldNamingPolicy... namingPolicy) {
 		List<T> res = new ArrayList<T>();
